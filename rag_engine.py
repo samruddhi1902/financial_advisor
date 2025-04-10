@@ -27,7 +27,7 @@ def load_fixed_document(filepath):
 
 # Build index once
 def init_engine():
-    chunks = load_fixed_document("/Users/chintamaniborhade/financial_advisor/FinancialData (1) (1).docx")  # path to your fixed file
+    chunks = load_fixed_document("data/FinancialData (2).docx")  # path to your fixed file
     embedding_model = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
     texts = [doc.page_content for doc in chunks]
     embeddings = np.array(embedding_model.embed_documents(texts), dtype=np.float32)
@@ -55,12 +55,39 @@ def query_chatbot(question, chat_history):
 
     chat_model = ChatTogether(
         together_api_key=os.getenv("TOGETHER_API_KEY"), 
-        model="mistralai/Mixtral-8x7B-Instruct-v0.1"
+        model="meta-llama/Llama-3.3-70B-Instruct-Turbo"
     )
 
     prompt = PromptTemplate(
         input_variables=["history", "context", "question"],
-        template="""You are a financial advisor specializing in suggesting investment schemes. Use the following context to answer questions accurately:
+        template="""You are a financial advisor chatbot for Indian users. Use only the information provided in the knowledge base below to answer.
+
+USER INPUT:
+- Risk Profile: [low]
+- Investment Horizon: [e.g., 1 year / 5 years / 15 years]
+- Amount to Invest: [e.g., ₹50,000 or ₹5,000/month]
+- Liquidity Preference: [high / medium / low]
+- Tax-Saving Needed: [yes / no]
+- Special Conditions (if any): [senior citizen / saving for child / retirement planning]
+
+TASK:
+Recommend the most suitable low-risk investment options among Fixed Deposits, Savings Accounts, Public Provident Fund (PPF), and Certificates of Deposit (CDs).
+
+For each recommended product, explain:
+- Why it is suitable for the user’s input
+- Expected returns
+- Lock-in period
+- Liquidity
+- Tax implications
+- Senior citizen benefits (if applicable)
+
+Also mention when each product would *not* be ideal for the user's needs.
+1. Greet back simply if the user greets (e.g., "Hello" → "Hi! I m here to help with your financial investment queries").
+2. If the question is unclear, ask for more details.
+3. When answering, quote interest rates and lock-in periods exactly from context.
+4. Keep answers short and to the point (3-5 sentences max).
+5. Mention who the rate applies to (general/senior citizen).
+7. Do not make assumptions or add extra content outside the context.
 
 Context: {context}
 
