@@ -1,0 +1,11 @@
+numpy
+pandas
+python-docx
+faiss-cpu
+sentence-transformers
+transformers
+langchain
+langchain-community
+langchain_together
+tiktoken
+streamlit
